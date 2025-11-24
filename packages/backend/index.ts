@@ -12,13 +12,13 @@ app.use(express.json());
 console.log('BOTAI_API_KEY:', process.env.BOTAI_API_KEY);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('test');
+   res.send('test');
 });
 
 app.get('/api/test', (req: Request, res: Response) => {
-  res.json({ message: 'test2' });
+   res.json({ message: 'test2' });
 });
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+   console.log(`Server is running at http://localhost:${port}`);
 });
