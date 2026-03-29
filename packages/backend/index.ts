@@ -1,11 +1,21 @@
 import dotenv from 'dotenv';
 import express, { type Request, type Response } from 'express';
 import OpenAI from 'openai';
+import z from 'zod';
 
 dotenv.config();
 
 const client = new OpenAI({
    apiKey: process.env.BOTAI_API_KEY,
+});
+
+const chatSchema = z.object({
+   prompt: z
+      .string()
+      .trim()
+      .min(1, 'Prompt is required')
+      .max(1000, 'Prompt is too long, maximum 1000 characters'),
+   conversationId: z.string().uuid(),
 });
 
 const app = express();
@@ -29,6 +39,13 @@ app.get('/api/test', (req: Request, res: Response) => {
 const converstations = new Map<string, string>();
 
 app.post('/api/chat', async (req: Request, res: Response) => {
+   const parseResult = chatSchema.safeParse(req.body);
+
+   if (!parseResult.success) {
+      res.status(400).json(parseResult.error.format());
+      return;
+   }
+
    const { prompt, conversationId } = req.body;
 
    const response = await client.responses.create({
